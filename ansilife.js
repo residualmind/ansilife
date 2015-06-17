@@ -9,7 +9,11 @@
  * /_/   \_\_| \_|____/___|_____|___|_|   |_____|
  *
  * ~ I Didn't Choose The Ansi Life,
- *   The Ansi Life Chose Me ~
+ *   The Ansi Life Chose Me ~       []
+ *                                []  []
+ *       []        [][]             [][]
+ *         []    []    []    [][]
+ *     [][][]      [][]      [][]
  */
 
 var Life = {
@@ -51,7 +55,7 @@ var Life = {
 
             self.g = _g.concat();
             s = self.g.map(function (v, i) {
-                return C + (v ? '46m  ' : '40m  ') + (!i | (i % self.w) ? '' : '\n');
+                return C + ['40m  ', '46m  '][v] + ['\n', ''][~~!!(!i | (i % self.w))];
             }).join('');
 
             process.stdout.write(C + '1;1H' + s.slice(7));
