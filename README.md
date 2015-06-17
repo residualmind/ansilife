@@ -1,3 +1,3 @@
 # ansilife
 
-![screenshot](https://raw.githubusercontent.com/residualmind/ansilife/master/screenshot.jpg)
+![screenshot](https://raw.githubusercontent.com/residualmind/ansilife/master/life.gif)
