@@ -50,7 +50,8 @@ var Life = {
                         n += (xx | yy) & self.g[self.xy2i(x + xx, y + yy)];
                     }
                 }
-                _g[i] = B[n] | self.g[i] & S[n];
+                n = 256 >> n;
+                _g[i] = ~~!!((B & n) | (self.g[i] && (S & n)));
             }
 
             self.g = _g.concat();
@@ -64,8 +65,8 @@ var Life = {
 };
 
 // RULES; B=birth, S=sustain
-var B = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    S = [0, 0, 1, 1, 0, 0, 0, 0, 0, 0];
+var B = parseInt('000100000', 2), // [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    S = parseInt('001100000', 2); // [0, 0, 1, 1, 0, 0, 0, 0, 0, 0];
 
 if (process.argv.filter(function (v) {
     return v.indexOf('-h') > -1;
