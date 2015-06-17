@@ -35,7 +35,7 @@ var Life = {
         process.stdout.write(C + '1;1H' + C + 'J');
 
         setInterval(function () {
-            var i, xx, yy, x, y, n, s, _g, l;
+            var i, xx, yy, x, y, n, s, _g;
             _g = self.g.concat();
             for (i = 0; i < _g.length; i++) {
                 x = i % self.w;
@@ -46,13 +46,12 @@ var Life = {
                         n += (xx | yy) & self.g[self.xy2i(x + xx, y + yy)];
                     }
                 }
-                l = self.g[i];
-                _g[i] = B[n] | l & S[n];
+                _g[i] = B[n] | self.g[i] & S[n];
             }
 
             self.g = _g.concat();
             s = self.g.map(function (v, i) {
-                return C + (v ? '46m  ' : '40m  ') + ((i && 0 === (i % self.w)) ? '\n' : '');
+                return C + (v ? '46m  ' : '40m  ') + (!i | (i % self.w) ? '' : '\n');
             }).join('');
 
             process.stdout.write(C + '1;1H' + s.slice(7));
