@@ -49,15 +49,13 @@ var Life = {
                 l = self.g[i];
                 _g[i] = B[n] | l & S[n];
             }
+
             self.g = _g.concat();
-            s = '';
-            for (i = 1; i < self.w * self.h; i++) {
-                s += C + (self.g[i] ? '46m  ' : '40m  ');
-                if ((i % (self.w)) === 0) {
-                    s += '\n';
-                }
-            }
-            process.stdout.write(C + '1;1H' + s);
+            s = self.g.map(function (v, i) {
+                return C + (v ? '46m  ' : '40m  ') + ((i && 0 === (i % self.w)) ? '\n' : '');
+            }).join('');
+
+            process.stdout.write(C + '1;1H' + s.slice(7));
         }, parseInt(process.argv[2]) || 50);
     }
 };
