@@ -44,13 +44,12 @@ var Life = {
             for (i = 0; i < _g.length; i++) {
                 x = i % self.w;
                 y = ~~ (i / self.w);
-                n = 0;
+                n = 256; // 0b100000000 is zero neighbors
                 for (xx = -1; xx <= 1; xx++) {
                     for (yy = -1; yy <= 1; yy++) {
-                        n += (xx | yy) & self.g[self.xy2i(x + xx, y + yy)];
+                        n  >>= (xx | yy) & self.g[self.xy2i(x + xx, y + yy)]; // shift right for each neighbor
                     }
                 }
-                n = 256 >> n;
                 _g[i] = ~~!!((B & n) | (self.g[i] && (S & n)));
             }
 
