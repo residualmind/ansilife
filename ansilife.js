@@ -2,7 +2,7 @@
 
 'use strict';
 
-/*     _    _   _ ____ ___ _     ___ _____ _____ 
+/*     _    _   _ ____ ___ _     ___ _____ _____
  *    / \  | \ | / ___|_ _| |   |_ _|  ___| ____|
  *   / _ \ |  \| \___ \| || |    | || |_  |  _|
  *  / ___ \| |\  |___) | || |___ | ||  _| | |___
@@ -27,7 +27,8 @@ var Life = {
         var C = '\x1b[', // ANSI CSI
             self = this,
             i, w = ~~ (console._stdout.columns / 2) - 1,
-            h = console._stdout.rows;
+            h = console._stdout.rows,
+            interval;
 
         this.w = w;
         this.h = h;
@@ -36,10 +37,28 @@ var Life = {
             self.g.push(~~(Math.random() + 0.5));
         }
 
-        process.stdout.write(C + '1;1H' + C + 'J');
+        process.stdin.setRawMode(true);
+        process.stdout.write(C + '?25l' + C + '1;1H' + C + 'J');
 
-        setInterval(function () {
+        process.stdin.on('readable', function () {
+            if (process.stdin.read() !== null) {
+                self.die = true;
+                process.stdin.setRawMode(false);
+            }
+        });
+
+        interval = setInterval(function () {
             var i, xx, yy, x, y, n, s, _g;
+
+            if (self.die) {
+                clearInterval(interval);
+                process.stdin.removeAllListeners('readable');
+                process.stdout.write(C + '?25h' + C + '0m');
+                process.stdout.write('\n\n“The History Of The Universe In Three Words\n\n CHAPTER ONE\n  Bang!\n\n CHAPTER TWO' +
+                    '\n  sssss\n\n CHAPTER THREE\n  crunch.\n\n THE END”\n\n\n ― Iain M. Banks\n\n');
+                return;
+            }
+
             _g = self.g.concat();
             for (i = 0; i < _g.length; i++) {
                 x = i % self.w;
@@ -47,9 +66,14 @@ var Life = {
                 n = 256; // 0b100000000 is zero neighbors
                 for (xx = -1; xx <= 1; xx++) {
                     for (yy = -1; yy <= 1; yy++) {
-                        n  >>= (xx | yy) & self.g[self.xy2i(x + xx, y + yy)]; // shift right for each neighbor
+
+                        // shift right for each neighbor
+                        n >>= (xx | yy) & self.g[self.xy2i(x + xx, y + yy)];
                     }
                 }
+
+                // either [B]irth criteria are met, or cell was alive last cycle and [S]ustain criteria are met
+                // in order for the cell to be alive this cycle
                 _g[i] = ~~!!((B & n) | (self.g[i] && (S & n)));
             }
 
@@ -59,13 +83,14 @@ var Life = {
             }).join('');
 
             process.stdout.write(C + '1;1H' + s.slice(7));
+
         }, parseInt(process.argv[2]) || 50);
     }
 };
 
 // RULES; B=birth, S=sustain
-var B = parseInt('000100000', 2), // [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    S = parseInt('001100000', 2); // [0, 0, 1, 1, 0, 0, 0, 0, 0, 0];
+var B = parseInt('000100000', 2), // 3 neighbors bring a cell to life
+    S = parseInt('001100000', 2); // 2 or 3 neighbors sustain a cell's life
 
 if (process.argv.filter(function (v) {
     return v.indexOf('-h') > -1;
